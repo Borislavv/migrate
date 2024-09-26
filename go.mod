@@ -1,4 +1,4 @@
-module github.com/Borislavv/migrate
+module github.com/Borislavv/migrate/v4
 
 go 1.22.0
 

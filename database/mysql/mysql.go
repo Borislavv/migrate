@@ -98,9 +98,7 @@ func WithConnection(ctx context.Context, conn *sql.Conn, config *Config) (*Mysql
 }
 
 // instance must have `multiStatements` set to true
-func WithInstance(instance *sql.DB, config *Config) (database.Driver, error) {
-	ctx := context.Background()
-
+func WithInstance(ctx context.Context, instance *sql.DB, config *Config) (database.Driver, error) {
 	if err := instance.Ping(); err != nil {
 		return nil, err
 	}
@@ -258,7 +256,7 @@ func (m *Mysql) Open(url string) (database.Driver, error) {
 		return nil, err
 	}
 
-	mx, err := WithInstance(db, &Config{
+	mx, err := WithInstance(context.Background(), db, &Config{
 		DatabaseName:     config.DBName,
 		MigrationsTable:  customParams["x-migrations-table"],
 		NoLock:           noLock,

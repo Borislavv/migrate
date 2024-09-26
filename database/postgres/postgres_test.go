@@ -702,7 +702,7 @@ func testWithInstanceConcurrent(t *testing.T) {
 		for i := 0; i < concurrency; i++ {
 			go func(i int) {
 				defer wg.Done()
-				_, err := WithInstance(db, &Config{})
+				_, err := WithInstance(context.Background(), db, &Config{})
 				if err != nil {
 					t.Errorf("process %d error: %s", i, err)
 				}

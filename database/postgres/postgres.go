@@ -131,9 +131,7 @@ func WithConnection(ctx context.Context, conn *sql.Conn, config *Config) (*Postg
 	return px, nil
 }
 
-func WithInstance(instance *sql.DB, config *Config) (database.Driver, error) {
-	ctx := context.Background()
-
+func WithInstance(ctx context.Context, instance *sql.DB, config *Config) (database.Driver, error) {
 	if err := instance.Ping(); err != nil {
 		return nil, err
 	}
@@ -202,7 +200,7 @@ func (p *Postgres) Open(url string) (database.Driver, error) {
 		}
 	}
 
-	px, err := WithInstance(db, &Config{
+	px, err := WithInstance(context.Background(), db, &Config{
 		DatabaseName:          purl.Path,
 		MigrationsTable:       migrationsTable,
 		MigrationsTableQuoted: migrationsTableQuoted,

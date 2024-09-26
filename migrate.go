@@ -7,7 +7,6 @@ package migrate
 import (
 	"errors"
 	"fmt"
-	iurl "github.com/golang-migrate/migrate/v4/internal/url"
 	"os"
 	"strings"
 	"sync"
@@ -125,7 +124,7 @@ func New(sourceURL, databaseURL string) (*Migrate, error) {
 func NewWithDatabaseInstance(sourceURL string, databaseName string, databaseInstance database.Driver) (*Migrate, error) {
 	m := newCommon()
 
-	sourceName, err := iurl.SchemeFromURL(sourceURL)
+	sourceName, err := SchemeFromURL(sourceURL)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +150,7 @@ func NewWithDatabaseInstance(sourceURL string, databaseName string, databaseInst
 func NewWithSourceInstance(sourceName string, sourceInstance source.Driver, databaseURL string) (*Migrate, error) {
 	m := newCommon()
 
-	databaseName, err := iurl.SchemeFromURL(databaseURL)
+	databaseName, err := SchemeFromURL(databaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse scheme from database URL: %w", err)
 	}

@@ -7,16 +7,20 @@ package migrate
 import (
 	"errors"
 	"fmt"
+	iurl "github.com/golang-migrate/migrate/v4/internal/url"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/hashicorp/go-multierror"
 
 	"github.com/golang-migrate/migrate/v4/database"
-	iurl "github.com/golang-migrate/migrate/v4/internal/url"
 	"github.com/golang-migrate/migrate/v4/source"
 )
+
+var errNoScheme = errors.New("no scheme")
+var errEmptyURL = errors.New("URL cannot be empty")
 
 // DefaultPrefetchMigrations sets the number of migrations to pre-read
 // from the source. This is helpful if the source is remote, but has little
@@ -87,13 +91,13 @@ type Migrate struct {
 func New(sourceURL, databaseURL string) (*Migrate, error) {
 	m := newCommon()
 
-	sourceName, err := iurl.SchemeFromURL(sourceURL)
+	sourceName, err := SchemeFromURL(sourceURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse scheme from source URL: %w", err)
 	}
 	m.sourceName = sourceName
 
-	databaseName, err := iurl.SchemeFromURL(databaseURL)
+	databaseName, err := SchemeFromURL(databaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse scheme from database URL: %w", err)
 	}
@@ -978,4 +982,20 @@ func (m *Migrate) logErr(err error) {
 	if m.Log != nil {
 		m.Log.Printf("error: %v", err)
 	}
+}
+
+// SchemeFromURL returns the scheme from a URL string
+func SchemeFromURL(url string) (string, error) {
+	if url == "" {
+		return "", errEmptyURL
+	}
+
+	i := strings.Index(url, ":")
+
+	// No : or : is the first character.
+	if i < 1 {
+		return "", errNoScheme
+	}
+
+	return url[0:i], nil
 }
